@@ -55,6 +55,14 @@ export async function findAll(filters = {}) {
     sql += ' AND DATE(i.created_at) <= ?';
     params.push(filters.date_to);
   }
+  if (filters.user_feedback !== undefined) {
+    if (filters.user_feedback === 'none' || filters.user_feedback === '') {
+      sql += " AND i.status = 'resolved' AND (i.user_feedback IS NULL OR i.user_feedback = '')";
+    } else {
+      sql += ' AND i.user_feedback = ?';
+      params.push(filters.user_feedback);
+    }
+  }
 
   sql += ' ORDER BY i.created_at DESC';
   return query(sql, params);

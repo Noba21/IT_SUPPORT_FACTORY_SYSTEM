@@ -10,7 +10,7 @@ function canAccessIssue(user, issue) {
 
 export async function list(req, res, next) {
   try {
-    const { status, priority, department_id, date_from, date_to } = req.query;
+    const { status, priority, department_id, date_from, date_to, feedback } = req.query;
     const filters = {};
 
     if (req.user.role === 'department') {
@@ -24,6 +24,7 @@ export async function list(req, res, next) {
     if (department_id) filters.department_id = department_id;
     if (date_from) filters.date_from = date_from;
     if (date_to) filters.date_to = date_to;
+    if (req.user.role === 'admin' && feedback) filters.user_feedback = feedback === 'none' ? 'none' : feedback;
 
     const issues = await issueModel.findAll(filters);
     res.json({ issues });
@@ -89,7 +90,10 @@ export async function update(req, res, next) {
     if (req.user.role === 'admin' || req.user.role === 'technician') {
       if (technician_id !== undefined) data.technician_id = technician_id || null;
       if (status !== undefined) data.status = status;
-      if (resolution_note !== undefined) data.resolution_note = resolution_note;
+      if (resolution_note !== undefined) {
+        data.resolution_note = resolution_note;
+        data.user_feedback = null;
+      }
       if (status === 'resolved') data.resolved_at = new Date();
     }
 
