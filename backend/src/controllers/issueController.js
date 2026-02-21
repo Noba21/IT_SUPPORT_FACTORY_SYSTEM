@@ -55,6 +55,9 @@ export async function create(req, res, next) {
     if (!title || !description) {
       return res.status(400).json({ error: 'Title and description required' });
     }
+    if (description.trim().length < 12) {
+      return res.status(400).json({ error: 'Description must be at least 12 characters' });
+    }
 
     const id = await issueModel.create({
       user_id: req.user.id,

@@ -41,12 +41,21 @@ export default function TechnicianIssueDetail() {
         <p className="text-gray-500 mt-1">{issue.department_name} • {issue.user_name} • {issue.user_email}</p>
         <p className="mt-4">{issue.description}</p>
         {issue.screenshot && <img src={`/uploads/${issue.screenshot}`} alt="Screenshot" className="mt-4 max-w-md rounded" />}
-        <div className="mt-4 flex gap-4">
+        <div className="mt-4 flex flex-wrap gap-4 items-center">
           <select value={issue.status} onChange={(e) => updateStatus(e.target.value)} className="px-3 py-1 border rounded">
             <option value="pending">Pending</option>
             <option value="in_progress">In Progress</option>
             <option value="resolved">Resolved</option>
           </select>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={issue.status === 'resolved'}
+              onChange={(e) => updateStatus(e.target.checked ? 'resolved' : 'in_progress')}
+              className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+            />
+            <span className="text-sm font-medium">Mark task as finished</span>
+          </label>
         </div>
         <div className="mt-4">
           <label className="block text-sm font-medium mb-1">Resolution note</label>

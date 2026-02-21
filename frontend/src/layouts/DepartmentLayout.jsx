@@ -1,5 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getUploadUrl } from '../utils/photoUrl';
 
 export default function DepartmentLayout() {
   const { user, logout } = useAuth();
@@ -38,6 +39,13 @@ export default function DepartmentLayout() {
               ))}
             </div>
             <div className="flex items-center gap-4">
+              {user?.photo ? (
+                <img src={getUploadUrl(user.photo)} alt="" className="w-8 h-8 rounded-full object-cover border border-emerald-600" />
+              ) : (
+                <span className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-xs font-medium">
+                  {user?.full_name?.slice(0, 2)?.toUpperCase() || 'U'}
+                </span>
+              )}
               <span className="text-sm">{user?.full_name}</span>
               <button
                 onClick={handleLogout}

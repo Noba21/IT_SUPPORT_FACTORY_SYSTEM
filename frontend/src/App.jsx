@@ -19,7 +19,7 @@ import DepartmentDashboard from './pages/department/DepartmentDashboard';
 import DepartmentRequest from './pages/department/DepartmentRequest';
 import DepartmentHistory from './pages/department/DepartmentHistory';
 import DepartmentHistoryDetail from './pages/department/DepartmentHistoryDetail';
-import DepartmentProfile from './pages/department/DepartmentProfile';
+import ProfilePage from './pages/ProfilePage';
 import TechnicianDashboard from './pages/technician/TechnicianDashboard';
 import TechnicianIssueDetail from './pages/technician/TechnicianIssueDetail';
 
@@ -55,6 +55,7 @@ export default function App() {
         <Route path="users" element={<AdminUsers />} />
         <Route path="reports" element={<AdminReports />} />
         <Route path="chat" element={<AdminChat />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
 
       <Route path="/department" element={<ProtectedRoute roles={['department']}><DepartmentLayout /></ProtectedRoute>}>
@@ -62,12 +63,13 @@ export default function App() {
         <Route path="request" element={<DepartmentRequest />} />
         <Route path="history" element={<DepartmentHistory />} />
         <Route path="history/:id" element={<DepartmentHistoryDetail />} />
-        <Route path="profile" element={<DepartmentProfile />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
 
       <Route path="/technician" element={<ProtectedRoute roles={['technician']}><TechnicianLayout /></ProtectedRoute>}>
         <Route index element={<TechnicianDashboard />} />
         <Route path="issues/:id" element={<TechnicianIssueDetail />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

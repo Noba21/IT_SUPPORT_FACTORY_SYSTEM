@@ -8,6 +8,13 @@ export async function findById(id) {
   );
 }
 
+export async function findByIdWithPassword(id) {
+  return queryOne(
+    'SELECT id, full_name, email, phone, photo, password, role FROM users WHERE id = ?',
+    [id]
+  );
+}
+
 export async function findByEmail(email) {
   return queryOne('SELECT * FROM users WHERE email = ?', [email.trim().toLowerCase()]);
 }

@@ -13,6 +13,17 @@ export default function TechnicianDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
+  async function markFinished(e, issueId) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await api.put(`/issues/${issueId}`, { status: 'resolved' });
+      setIssues((prev) => prev.map((i) => i.id === issueId ? { ...i, status: 'resolved' } : i));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   if (loading) return <div className="p-6">Loading...</div>;
 
   return (
@@ -39,6 +50,17 @@ export default function TechnicianDashboard() {
                 }`}>
                   {i.status}
                 </span>
+              </div>
+              <div className="flex items-center gap-3 mt-3" onClick={(e) => e.stopPropagation()}>
+                <label className="flex items-center gap-2 cursor-pointer text-sm">
+                  <input
+                    type="checkbox"
+                    checked={i.status === 'resolved'}
+                    onChange={(e) => markFinished(e, i.id)}
+                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  />
+                  <span>Mark as finished</span>
+                </label>
               </div>
               {i.priority === 'urgent' && (
                 <span className="inline-block mt-2 px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded">Urgent</span>

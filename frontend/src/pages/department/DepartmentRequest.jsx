@@ -7,7 +7,7 @@ import api from '../../services/api';
 
 const schema = z.object({
   title: z.string().min(3, 'Min 3 characters'),
-  description: z.string().min(10, 'Min 10 characters'),
+  description: z.string().min(12, 'Write at least 12 characters'),
   priority: z.enum(['urgent', 'not_urgent']),
 });
 
@@ -59,8 +59,9 @@ export default function DepartmentRequest() {
             {...register('description')}
             rows={4}
             className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-emerald-500"
-            placeholder="Describe the issue..."
+            placeholder="Describe the issue (write at least 12 characters)..."
           />
+          <p className="text-xs text-gray-500 mt-1">Please write at least 12 characters.</p>
           {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
         </div>
         <div>

@@ -54,6 +54,18 @@ export default function DepartmentProfile() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white rounded-lg shadow p-6">
         {error && <div className="p-3 rounded bg-red-100 text-red-700 text-sm">{error}</div>}
         {success && <div className="p-3 rounded bg-green-100 text-green-700 text-sm">{success}</div>}
+        <div className="flex items-center gap-4">
+          {user?.photo ? (
+            <img src={`/uploads/${user.photo}`} alt="Profile" className="w-20 h-20 rounded-full object-cover border-2 border-emerald-500" />
+          ) : (
+            <span className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-medium">
+              {user?.full_name?.slice(0, 2)?.toUpperCase() || '?'}
+            </span>
+          )}
+          <div>
+            <p className="text-sm text-gray-500">Current photo {user?.photo ? '(change below)' : '(add one below)'}</p>
+          </div>
+        </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
           <input {...register('full_name')} className="w-full px-4 py-2 border rounded" />
@@ -70,6 +82,7 @@ export default function DepartmentProfile() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
           <input {...register('photo')} type="file" accept="image/*" className="w-full px-4 py-2 border rounded file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-emerald-500 file:text-white" />
+          <p className="text-xs text-gray-500 mt-1">Choose a new image to replace your current photo. Save to apply.</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">New Password (leave blank to keep)</label>
