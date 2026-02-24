@@ -1,11 +1,8 @@
 import multer from 'multer';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { resolveUploadRoot } from '../config/uploadPath.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const uploadDir = process.env.UPLOAD_PATH || './uploads';
+const uploadDir = resolveUploadRoot();
 const maxSize = 5 * 1024 * 1024; // 5MB
 const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
@@ -41,6 +38,12 @@ export const uploadScreenshot = multer({
   limits: { fileSize: maxSize },
   fileFilter,
 }).single('screenshot');
+
+export const uploadOutsourcingScreenshot = multer({
+  storage,
+  limits: { fileSize: maxSize },
+  fileFilter,
+}).single('outsourcing_screenshot');
 
 /** Middleware: set upload type so storage picks the right folder */
 export function setUploadType(type) {
