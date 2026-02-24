@@ -5,15 +5,16 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import app from './src/app.js';
 import { initSocket } from './src/services/socketService.js';
+import { resolveUploadRoot } from './src/config/uploadPath.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 dotenv.config({ path: join(__dirname, '.env') });
 
-const uploadPath = process.env.UPLOAD_PATH || './uploads';
-for (const dir of ['profiles', 'screenshots']) {
-  const full = join(__dirname, uploadPath, dir);
+const uploadRoot = resolveUploadRoot();
+for (const dir of ['profiles', 'screenshots', 'misc']) {
+  const full = join(uploadRoot, dir);
   if (!fs.existsSync(full)) fs.mkdirSync(full, { recursive: true });
 }
 
