@@ -16,7 +16,7 @@ function sendToken(res, user) {
     throw new Error('JWT_SECRET is not set in environment');
   }
   const token = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    { id: user.id, email: user.email, role: user.role, location_type: user.location_type || null },
     secret,
     { expiresIn: JWT_EXPIRES_IN }
   );
@@ -30,6 +30,7 @@ function sendToken(res, user) {
       department_id: user.department_id,
       photo: user.photo,
       status: user.status,
+      location_type: user.location_type || null,
     },
   });
 }
@@ -42,7 +43,7 @@ export async function login(req, res, next) {
     }
 
     const user = await queryOne(
-      'SELECT id, full_name, email, password, role, department_id, photo, status FROM users WHERE email = ?',
+      'SELECT id, full_name, email, password, role, department_id, photo, status, location_type FROM users WHERE email = ?',
       [email.trim().toLowerCase()]
     );
     if (!user) {
@@ -65,7 +66,7 @@ export async function login(req, res, next) {
 
 export async function register(req, res, next) {
   try {
-    const { full_name, department_id, email, phone, password } = req.body;
+    const { full_name, department_id, email, phone, password, location_type } = req.body;
     const photo = req.file ? `profiles/${req.file.filename}` : null;
 
     if (!full_name || !email || !password) {
@@ -78,14 +79,18 @@ export async function register(req, res, next) {
     }
 
     const hashed = await bcrypt.hash(password, 10);
+    const loc =
+      typeof location_type === 'string' && ['hq', 'factory'].includes(location_type.trim().toLowerCase())
+        ? location_type.trim().toLowerCase()
+        : null;
     const result = await query(
-      `INSERT INTO users (full_name, department_id, email, phone, photo, password, role, status)
-       VALUES (?, ?, ?, ?, ?, ?, 'department', 'active')`,
-      [full_name.trim(), department_id || null, email.trim().toLowerCase(), phone?.trim() || null, photo, hashed]
+      `INSERT INTO users (full_name, department_id, email, phone, location_type, photo, password, role, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'department', 'active')`,
+      [full_name.trim(), department_id || null, email.trim().toLowerCase(), phone?.trim() || null, loc, photo, hashed]
     );
 
     const user = await queryOne(
-      'SELECT id, full_name, email, role, department_id, photo, status FROM users WHERE id = ?',
+      'SELECT id, full_name, email, role, department_id, photo, status, location_type FROM users WHERE id = ?',
       [result.insertId]
     );
     sendToken(res, user);
@@ -106,7 +111,7 @@ export async function logout(req, res, next) {
 export async function me(req, res, next) {
   try {
     const user = await queryOne(
-      `SELECT id, full_name, email, phone, photo, role, department_id, status, created_at
+      `SELECT id, full_name, email, phone, photo, role, department_id, status, created_at, location_type
        FROM users WHERE id = ?`,
       [req.user.id]
     );
