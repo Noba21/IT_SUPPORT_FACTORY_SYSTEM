@@ -3,6 +3,7 @@ import { query, queryOne } from '../config/db.js';
 export async function findById(id) {
   return queryOne(
     `SELECT i.*, u.full_name AS user_name, u.email AS user_email, u.department_id AS user_department_id,
+            u.location_type AS user_location_type,
             d.name AS department_name, t.full_name AS technician_name
      FROM issues i
      JOIN users u ON i.user_id = u.id
@@ -15,9 +16,11 @@ export async function findById(id) {
 
 export async function findAll(filters = {}) {
   let sql = `
-    SELECT i.id, i.user_id, i.technician_id, i.title, i.description, i.screenshot, i.priority, i.status,
+    SELECT i.id, i.user_id, i.technician_id, i.title, i.description, i.screenshot, i.outsourcing_screenshot,
+           i.material_requirements, i.needs_outsourcing, i.outsourcing_note,
+           i.problem_type, i.priority, i.status,
            i.resolution_note, i.user_feedback, i.created_at, i.resolved_at,
-           u.full_name AS user_name, u.department_id, d.name AS department_name,
+           u.full_name AS user_name, u.department_id, u.location_type AS user_location_type, d.name AS department_name,
            t.full_name AS technician_name
     FROM issues i
     JOIN users u ON i.user_id = u.id
@@ -69,17 +72,60 @@ export async function findAll(filters = {}) {
 }
 
 export async function create(data) {
-  const { user_id, title, description, screenshot, priority } = data;
+  const {
+    user_id,
+    title,
+    description,
+    screenshot,
+    problem_type,
+    priority,
+    material_requirements,
+    needs_outsourcing,
+    outsourcing_note,
+  } = data;
   const result = await query(
-    `INSERT INTO issues (user_id, title, description, screenshot, priority, status)
-     VALUES (?, ?, ?, ?, ?, 'pending')`,
-    [user_id, title, description, screenshot || null, priority || 'not_urgent']
+    `INSERT INTO issues (
+       user_id,
+       title,
+       description,
+       screenshot,
+       material_requirements,
+       needs_outsourcing,
+       outsourcing_note,
+       problem_type,
+       priority,
+       status
+     )
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+    [
+      user_id,
+      title,
+      description,
+      screenshot || null,
+      material_requirements || null,
+      typeof needs_outsourcing === 'number' || typeof needs_outsourcing === 'boolean'
+        ? (needs_outsourcing ? 1 : 0)
+        : 0,
+      outsourcing_note || null,
+      problem_type || null,
+      priority || 'not_urgent',
+    ]
   );
   return result.insertId;
 }
 
 export async function update(id, data) {
-  const allowed = ['technician_id', 'status', 'resolution_note', 'user_feedback', 'resolved_at'];
+  const allowed = [
+    'technician_id',
+    'status',
+    'resolution_note',
+    'user_feedback',
+    'resolved_at',
+    'material_requirements',
+    'needs_outsourcing',
+    'outsourcing_note',
+    'outsourcing_screenshot',
+  ];
   const updates = [];
   const params = [];
 
