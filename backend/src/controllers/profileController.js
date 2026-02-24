@@ -3,7 +3,7 @@ import * as userModel from '../models/userModel.js';
 
 export async function updateMe(req, res, next) {
   try {
-    const { full_name, phone, email, password, current_password } = req.body;
+    const { full_name, phone, email, password, current_password, location_type } = req.body;
     const photo = req.file ? `profiles/${req.file.filename}` : undefined;
 
     const data = {};
@@ -12,6 +12,12 @@ export async function updateMe(req, res, next) {
     if (email !== undefined) data.email = email.trim().toLowerCase();
     if (photo !== undefined) data.photo = photo;
     if (password && password.length >= 6) data.password = await bcrypt.hash(password, 10);
+    if (location_type !== undefined) {
+      data.location_type =
+        typeof location_type === 'string' && ['hq', 'factory'].includes(location_type.trim().toLowerCase())
+          ? location_type.trim().toLowerCase()
+          : null;
+    }
 
     const changingSensitive = (phone !== undefined) || (email !== undefined && email.trim()) || (password && password.length >= 6);
     if (changingSensitive) {
