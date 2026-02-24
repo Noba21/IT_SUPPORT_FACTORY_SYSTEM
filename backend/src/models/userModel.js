@@ -2,7 +2,7 @@ import { query, queryOne } from '../config/db.js';
 
 export async function findById(id) {
   return queryOne(
-    `SELECT id, full_name, department_id, email, phone, photo, role, status, created_at, updated_at
+    `SELECT id, full_name, department_id, email, phone, location_type, photo, role, status, created_at, updated_at
      FROM users WHERE id = ?`,
     [id]
   );
@@ -10,7 +10,7 @@ export async function findById(id) {
 
 export async function findByIdWithPassword(id) {
   return queryOne(
-    'SELECT id, full_name, email, phone, photo, password, role FROM users WHERE id = ?',
+    'SELECT id, full_name, email, phone, location_type, photo, password, role FROM users WHERE id = ?',
     [id]
   );
 }
@@ -21,7 +21,7 @@ export async function findByEmail(email) {
 
 export async function findAll(filters = {}) {
   let sql = `
-    SELECT u.id, u.full_name, u.department_id, u.email, u.phone, u.photo, u.role, u.status, u.created_at,
+    SELECT u.id, u.full_name, u.department_id, u.email, u.phone, u.location_type, u.photo, u.role, u.status, u.created_at,
            d.name AS department_name
     FROM users u
     LEFT JOIN departments d ON u.department_id = d.id
@@ -55,17 +55,17 @@ export async function findDepartmentUsers(departmentId = null) {
 }
 
 export async function create(data) {
-  const { full_name, department_id, email, phone, photo, password, role } = data;
+  const { full_name, department_id, email, phone, location_type, photo, password, role } = data;
   const result = await query(
-    `INSERT INTO users (full_name, department_id, email, phone, photo, password, role, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 'active')`,
-    [full_name, department_id || null, email.trim().toLowerCase(), phone || null, photo || null, password, role]
+    `INSERT INTO users (full_name, department_id, email, phone, location_type, photo, password, role, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active')`,
+    [full_name, department_id || null, email.trim().toLowerCase(), phone || null, location_type || null, photo || null, password, role]
   );
   return result.insertId;
 }
 
 export async function update(id, data) {
-  const allowed = ['full_name', 'department_id', 'email', 'phone', 'photo', 'password'];
+  const allowed = ['full_name', 'department_id', 'email', 'phone', 'location_type', 'photo', 'password'];
   const updates = [];
   const params = [];
 
