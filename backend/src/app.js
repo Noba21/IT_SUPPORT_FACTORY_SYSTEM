@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { resolveUploadRoot } from './config/uploadPath.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import departmentRoutes from './routes/departmentRoutes.js';
@@ -14,7 +15,7 @@ import profileRoutes from './routes/profileRoutes.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
-app.use('/uploads', express.static(path.join(__dirname, '..', process.env.UPLOAD_PATH || 'uploads')));
+app.use('/uploads', express.static(resolveUploadRoot()));
 
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
