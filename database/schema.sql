@@ -41,6 +41,7 @@ CREATE TABLE users (
   department_id INT UNSIGNED DEFAULT NULL,
   email VARCHAR(150) NOT NULL,
   phone VARCHAR(30) DEFAULT NULL,
+  location_type ENUM('hq', 'factory') DEFAULT NULL,
   photo VARCHAR(255) DEFAULT NULL,
   password VARCHAR(255) NOT NULL,
   role ENUM('admin', 'technician', 'department') NOT NULL,
@@ -65,6 +66,11 @@ CREATE TABLE issues (
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   screenshot VARCHAR(255) DEFAULT NULL,
+  material_requirements TEXT DEFAULT NULL,
+  needs_outsourcing TINYINT(1) NOT NULL DEFAULT 0,
+  outsourcing_note TEXT DEFAULT NULL,
+  outsourcing_screenshot VARCHAR(255) DEFAULT NULL,
+  problem_type ENUM('hardware', 'software') DEFAULT NULL,
   priority ENUM('urgent', 'not_urgent') NOT NULL DEFAULT 'not_urgent',
   status ENUM('pending', 'in_progress', 'resolved') NOT NULL DEFAULT 'pending',
   resolution_note TEXT DEFAULT NULL,
@@ -111,3 +117,4 @@ CREATE TABLE messages (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
