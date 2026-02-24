@@ -47,7 +47,7 @@ export async function getById(req, res, next) {
 
 export async function create(req, res, next) {
   try {
-    const { full_name, department_id, email, phone, password, role } = req.body;
+    const { full_name, department_id, email, phone, password, role, location_type } = req.body;
     const photo = req.file ? `profiles/${req.file.filename}` : null;
 
     if (!full_name || !email || !password || !role) {
@@ -61,11 +61,16 @@ export async function create(req, res, next) {
     if (existing) return res.status(400).json({ error: 'Email already registered' });
 
     const hashed = await bcrypt.hash(password, 10);
+    const loc =
+      typeof location_type === 'string' && ['hq', 'factory'].includes(location_type.trim().toLowerCase())
+        ? location_type.trim().toLowerCase()
+        : null;
     const id = await userModel.create({
       full_name: full_name.trim(),
       department_id: department_id || null,
       email: email.trim().toLowerCase(),
       phone: phone?.trim() || null,
+      location_type: loc,
       photo,
       password: hashed,
       role,
@@ -80,7 +85,7 @@ export async function create(req, res, next) {
 
 export async function update(req, res, next) {
   try {
-    const { full_name, department_id, email, phone, password } = req.body;
+    const { full_name, department_id, email, phone, password, location_type } = req.body;
     const photo = req.file ? `profiles/${req.file.filename}` : undefined;
 
     const data = {};
@@ -90,6 +95,12 @@ export async function update(req, res, next) {
     if (phone !== undefined) data.phone = phone?.trim() || null;
     if (photo !== undefined) data.photo = photo;
     if (password && password.length >= 6) data.password = await bcrypt.hash(password, 10);
+    if (location_type !== undefined) {
+      data.location_type =
+        typeof location_type === 'string' && ['hq', 'factory'].includes(location_type.trim().toLowerCase())
+          ? location_type.trim().toLowerCase()
+          : null;
+    }
 
     if (Object.keys(data).length === 0) {
       const user = await userModel.findById(req.params.id);
